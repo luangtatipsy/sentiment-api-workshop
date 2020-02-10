@@ -1,0 +1,20 @@
+from http import HTTPStatus
+
+
+class InvalidUsage(Exception):
+    status_code = HTTPStatus.BAD_REQUEST  # 400
+
+    def __init__(self, message, status_code=None, payload=None):
+        Exception.__init__(self)
+        self.message = message
+        if status_code is not None:
+            self.status_code = status_code
+        self.payload = payload
+
+
+    def format_error(self):
+        error_response = dict(self.payload or ())
+        error_response["message"] = self.message
+        error_response["status_code"] = self.status_code
+
+        return error_response
