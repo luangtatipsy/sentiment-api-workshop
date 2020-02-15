@@ -1,4 +1,6 @@
 from flask import Flask, jsonify, request
+import requests
+from flask_cors import CORS, cross_origin
 from http import HTTPStatus
 from sentiment import get_sentiment_result
 from exception import InvalidUsage
@@ -7,19 +9,24 @@ import logging
 
 app = Flask(__name__)
 
+
+cors = CORS(app, resources={r"/sentiment": {"origins": "http://localhost"}})
+
+
 @app.route('/hello')
 def hello():
     response = {"message": "Hello Sentiment API"}
 
     return jsonify(response)
 
-
 @app.route("/sentiment", methods=["POST"])
+@cross_origin()
 def get_sentiment():
     status_code = HTTPStatus.OK
     response = {"status_code": status_code, "results": dict(), "message": ""}
     try:
         text = request.get_json()["text"]
+
         results = dict()
         results["sentiment"], results["score"] = get_sentiment_result(text)
 
