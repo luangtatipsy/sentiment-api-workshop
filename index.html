@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<title>Senitment API Caller</title>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	  <a class="navbar-brand" href="#">Sentiment API Caller</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+	    <span class="navbar-toggler-icon"></span>
+	  </button>
+	</nav>
+
+	<div class='container my-4'>
+		<div class='row'>
+			<div class='col'>
+			  <div class="form-group">
+			    <label for="text">
+			    	<strong>Input Message</strong>
+			    </label>
+			    <!-- <input type="text" class="form-control" name="text" id="text" placeholder="Enter Input Message"> -->
+			    <textarea type="text" class="form-control" name="text" id="text" rows="3" placeholder="Enter Input Message"></textarea>
+			  </div>
+
+				<div class="response my-4">
+					<p class="sentiment-label mb-1">
+						<strong>Message:</strong>
+						<span class="pl-4" id="message"></span>
+					</p>
+					<p class="sentiment-label mb-1">
+						<strong>Sentiment Label:</strong>
+						<strong>
+							<span class="pl-4" id="sentiment"></span>
+						</strong>
+					</p>
+					<p class="sentiment-confidence">
+						<strong>Confidence:</strong>
+						<span class="pl-4" id="confidence"></span>
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo= sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh sha512-bnIvzh6FU75ZKxp0GXLH9bewza/OIw6dLVh9ICg0gogclmYGguQJWl8U30WpbsGTqbIiAwxTsbe76DErLq5EDQ==" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script type="text/javascript">
+		url = "http://localhost:8204/sentiment";
+
+		$('#text').change(function(event){
+			event.preventDefault();
+
+			var text = $(this).val();
+			var data = JSON.stringify({text: text})
+
+			$.ajax({
+			  url: url,
+			  type: "POST",
+			  data: data,
+			  contentType: "application/json; charset=utf-8",
+			  dataType: "json",
+			  success: function(response){
+			  	var message = response['message'];
+			  	var confidence = response['results']['score'];
+			  	var sentiment = response['results']['sentiment'];
+
+			  	if (sentiment == 'negative'){
+			  		color = "red";
+			  	}
+			  	else if (sentiment == 'positive'){
+			  		color = "green";
+			  	}
+			  	else if (sentiment == 'neutral'){
+			  		var color = "orange";
+			  	}
+
+			  	$("#sentiment").css("color", color);
+			  	$("#sentiment").css("text-transform", "capitalize");
+
+			  	$("#message").text(message);
+			  	$("#sentiment").text(sentiment);
+			  	$("#confidence").text(confidence);
+		  	}
+			});
+		});
+	</script>
+</body>
+</html>
